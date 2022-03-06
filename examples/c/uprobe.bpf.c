@@ -7,10 +7,19 @@
 
 char LICENSE[] SEC("license") = "Dual BSD/GPL";
 
+struct connection {
+	int xx;
+	long yy;
+	short zz;
+};
+
 SEC("uprobe/func")
-int BPF_KPROBE(uprobe, int a, int b)
+int BPF_KPROBE(uprobe, struct connection *conn)
 {
-	bpf_printk("UPROBE ENTRY: a = %d, b = %d\n", a, b);
+	struct connection c = {};
+
+	bpf_probe_read_user(&c, sizeof(c), conn);
+	bpf_printk("UPROBE ENTRY: fd = %d, fd = %ld\n", c.xx, c.yy);
 	return 0;
 }
 

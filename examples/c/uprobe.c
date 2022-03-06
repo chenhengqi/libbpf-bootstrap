@@ -41,10 +41,16 @@ static long get_base_addr() {
 	return -1;
 }
 
+struct connection {
+	int x;
+	long y;
+	short z;
+};
+
 /* It's a global function to make sure compiler doesn't inline it. */
-int uprobed_function(int a, int b)
+long uprobed_function(struct connection *conn)
 {
-	return a + b;
+	return conn->x + conn->y + conn->z;
 }
 
 int main(int argc, char **argv)
@@ -113,7 +119,12 @@ int main(int argc, char **argv)
 	for (i = 0; ; i++) {
 		/* trigger our BPF programs */
 		fprintf(stderr, ".");
-		uprobed_function(i, i + 1);
+		struct connection conn = {
+			x: 1216,
+			y: 216,
+			z: 66,
+		};
+		uprobed_function(&conn);
 		sleep(1);
 	}
 
